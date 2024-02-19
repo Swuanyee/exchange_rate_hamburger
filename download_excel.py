@@ -12,8 +12,3 @@ def download_excel(file_url, local_filename):
     else:
         print(f"Failed to download file. HTTP Status: {response.status_code}")
         print("Response:", response.text[:500])  # Print first 500 characters of response text
-
-
-file_url = 'https://onedrive.live.com/download.aspx?resid=434F042447E4C39F!136&authkey=!AAsggaZW07MMJvE'
-local_filename = 'exchange_rates.xlsx'
-download_excel(file_url, local_filename)

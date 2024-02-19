@@ -91,5 +91,3 @@ def store_exchange_rates():
     session.commit()
     session.close()
     print("Exchange rate information has been added to the database using SQL.")
-
-store_exchange_rates()
