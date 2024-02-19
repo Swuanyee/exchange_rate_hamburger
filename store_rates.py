@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, String, Float, Integer
+from sqlalchemy import create_engine, Column, String, Float, Integer, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from openpyxl import load_workbook
@@ -10,7 +10,6 @@ import os
 # Make sure to replace 'user', 'password', 'host', 'port', and 'database_name' with your actual PostgreSQL credentials
 engine = create_engine('postgresql://data_collection:BKadmin2021@localhost:5432/exchange_rates_db')
 Base = declarative_base()
-print("Current working directory:", os.getcwd())
 
 # The rest of your code remains unchanged...
 
@@ -56,8 +55,8 @@ def store_exchange_rates():
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    wb = load_workbook(excel_file, data_only=True)
-    sheet = wb[sheet_name]
+    wb = load_workbook('exchange_rates.xlsx', data_only=True)
+    sheet = wb['Exchange']
 
     entry_date = datetime.now().date().strftime('%Y-%m-%d')
     entry_time = datetime.now().time().strftime('%H:%M:%S')
@@ -67,17 +66,30 @@ def store_exchange_rates():
     for currency, row in currency_rows.items():
         rates = [sheet[f'{col}{row}'].value for col in transactions]
 
-        # Always create a new record
-        new_currency_rate = CurrencyRates(entry_date=entry_date, entry_time=entry_time,
-                                          rate_date=rate_date, rate_time=rate_time,
-                                          currency=currency, face_2_face=rates[0],
-                                          buy=rates[1], sell=rates[2], visa=rates[3],
-                                          export=rates[4], remittance=rates[5], usdt=rates[6])
-        session.add(new_currency_rate)
+        insert_stmt = text("""
+            INSERT INTO currency_rates 
+            (entry_date, entry_time, rate_date, rate_time, currency, face_2_face, buy, sell, visa, export, remittance, usdt) 
+            VALUES 
+            (:entry_date, :entry_time, :rate_date, :rate_time, :currency, :face_2_face, :buy, :sell, :visa, :export, :remittance, :usdt)
+        """)
+
+        session.execute(insert_stmt, {
+            'entry_date': entry_date,
+            'entry_time': entry_time,
+            'rate_date': rate_date,
+            'rate_time': rate_time,
+            'currency': currency,
+            'face_2_face': rates[0],
+            'buy': rates[1],
+            'sell': rates[2],
+            'visa': rates[3],
+            'export': rates[4],
+            'remittance': rates[5],
+            'usdt': rates[6]
+        })
 
     session.commit()
     session.close()
-    print("Exchange rate information has been added to the database.")
-
+    print("Exchange rate information has been added to the database using SQL.")
 
 store_exchange_rates()
