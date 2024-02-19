@@ -1,15 +1,18 @@
-from sqlalchemy import create_engine, Column, String, Float, Integer, DateTime
+from sqlalchemy import create_engine, Column, String, Float, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from openpyxl import load_workbook
 from datetime import datetime
 import os
 
-# Database setup
-engine = create_engine('sqlite:///exchange_rates.db')
+# PostgreSQL Database setup
+# Format: postgresql://user:password@host:port/database_name
+# Make sure to replace 'user', 'password', 'host', 'port', and 'database_name' with your actual PostgreSQL credentials
+engine = create_engine('postgresql://data_collection:BKadmin2021@localhost:5432/exchange_rates_db')
 Base = declarative_base()
 print("Current working directory:", os.getcwd())
 
+# The rest of your code remains unchanged...
 
 # Model definition
 class CurrencyRates(Base):
