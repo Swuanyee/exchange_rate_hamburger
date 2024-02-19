@@ -17,7 +17,6 @@ Base = declarative_base()
 class CurrencyRates(Base):
     __tablename__ = 'currency_rates'
 
-    id = Column(Integer, primary_key=True)
     entry_date = Column(String)
     entry_time = Column(String)
     rate_date = Column(String)
